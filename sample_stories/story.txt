@@ -1,0 +1,8 @@
+John: "Hey, how's it going?"
+Barrista: "Good morning! What can I get you today?"
+John: "I'd like a cappuccino, please."
+Barrista: "Sure thing! Coming right up."
+John: "While you're doing that, mind writing your phone number down for me?"
+Barrista: "I'd rather not"
+John: "Understandable, have a nice day!"
+Barrista: "Have a nice day!"
