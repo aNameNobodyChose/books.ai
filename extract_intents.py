@@ -1,7 +1,7 @@
 import argparse
 import json
 import matplotlib.pyplot as plt
-from collections import defaultdict
+from collections import defaultdict, Counter
 from sklearn.feature_extraction.text import TfidfVectorizer
 import re
 from sklearn.cluster import KMeans
@@ -61,11 +61,34 @@ def cluster_intents(sentences, num_clusters=None, max_k=10, plot_elbow=True):
 def classify_intents(clustered_data, responses):
     classified_data = defaultdict(lambda: {"patterns": [], "responses": []})
 
+    # Flatten all sentences and keep cluster mapping
+    all_sentences = []
+    cluster_lookup = [] # which cluster each sentence lies in
     for cluster_id, queries in clustered_data.items():
-        tag = f"intent_{cluster_id}"
+        all_sentences.extend(queries)
+        cluster_lookup.extend([cluster_id] * len(queries))
+    
+    # Vectorize all sentences
+    vectorizer = TfidfVectorizer(stop_words="english")
+    X = vectorizer.fit_transform(all_sentences)
+    feature_names = vectorizer.get_feature_names_out() # This gives you a list of all words
+
+    cluster_word_scores = defaultdict(Counter)
+    for i, cluster_id in enumerate(cluster_lookup):
+        tfidf_vector = X[i].toarray()[0]
+        for idx, score in enumerate(tfidf_vector):
+            cluster_word_scores[cluster_id][feature_names[idx]] += score
+    
+    # Classify data with dynamic tags
+    for cluster_id, queries in clustered_data.items():
+        top_words = [word for word, _ in cluster_word_scores[cluster_id].most_common(3)]
+        tag = "_".join(top_words[:2]) if top_words else f"intent_{cluster_id}"
+        tag = tag.replace("_", " ").title().replace(" ", "_")  # Clean it up nicely
+
         for query in queries:
             classified_data[tag]["patterns"].append(query)
             classified_data[tag]["responses"].append(responses[query])
+
     return classified_data
 
 def save_to_json(classified_data, output_filename):
