@@ -2,7 +2,7 @@
 
 # Set the image name and script to run
 IMAGE_NAME="pytorch-chatbot:latest"
-SCRIPT_NAME="extract_intents.py"
+SCRIPT_NAME="extract_intents.extract_intents"
 
 # Initialize variables
 INPUT_FILE=""
@@ -42,4 +42,4 @@ docker run --rm -it \
   -v "$(pwd)":/workspace \
   -w /workspace \
   $IMAGE_NAME \
-  python $SCRIPT_NAME --input "$INPUT_FILE" --output "$OUTPUT_FILE"
+  python -m $SCRIPT_NAME --input "$INPUT_FILE" --output "$OUTPUT_FILE"

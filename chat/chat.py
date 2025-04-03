@@ -1,9 +1,9 @@
 import argparse
 import random
 import torch
-from model import NeuralNet
-from nltk_utils import bag_of_words, tokenize
-from train import load_intents
+from train.model import NeuralNet
+from train.nltk_utils import bag_of_words, tokenize
+from train.train import load_intents
 
 def chatLoop(all_words, model, tags, bot_name, intents):
     while True:

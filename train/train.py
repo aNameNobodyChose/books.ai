@@ -1,13 +1,13 @@
 import argparse
 import json
-from nltk_utils import tokenize, stem, bag_of_words
+from train.nltk_utils import tokenize, stem, bag_of_words
 import numpy as np
 
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 
-from model import NeuralNet
+from train.model import NeuralNet
 
 class ChatDataset(Dataset):
     def __init__(self, X_train, y_train):
