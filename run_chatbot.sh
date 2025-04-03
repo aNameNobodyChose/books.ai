@@ -2,7 +2,7 @@
 
 # Set the image name and script to run
 IMAGE_NAME="pytorch-chatbot:latest"
-SCRIPT_NAME="chat.py"
+SCRIPT_NAME="chat.chat"
 
 # Initialize variables
 INTENTS_FILE=""
@@ -48,4 +48,4 @@ docker run --rm -it \
   -v "$(pwd)":/workspace \
   -w /workspace \
   $IMAGE_NAME \
-  python $SCRIPT_NAME --intents "$INTENTS_FILE" --model "$MODEL_FILE" --bot-name "$BOT_NAME"
+  python -m $SCRIPT_NAME --intents "$INTENTS_FILE" --model "$MODEL_FILE" --bot-name "$BOT_NAME"
