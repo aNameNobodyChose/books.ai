@@ -5,6 +5,7 @@ from collections import defaultdict, Counter
 from sklearn.feature_extraction.text import TfidfVectorizer
 import re
 from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
 
 def read_story(filename):
     with open(filename, "r", encoding="utf-8") as file:
@@ -22,33 +23,36 @@ def map_patterns_responses(dialogues):
     }
 
 # Cluster sentences to infer intent
-def cluster_intents(sentences, num_clusters=None, max_k=10, plot_elbow=True):
-    vectorizer = TfidfVectorizer(stop_words="english")
+def cluster_intents(sentences, num_clusters=None, max_k=10, plot_silhouette=True):
+    vectorizer = TfidfVectorizer(stop_words="english", ngram_range=(1, 2))
     X = vectorizer.fit_transform(sentences)
-    if num_clusters is None:
-        max_k = min(max_k, len(sentences))
-        inertias = []
-        k_range = range(1, max_k + 1)
 
-        for k in k_range:
+    if num_clusters is None:
+        max_k = min(max_k, len(sentences) - 1)
+        best_score = -1
+        best_k = 2
+        scores = []
+
+        for k in range(2, max_k + 1):
             kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
-            kmeans.fit(X)
-            inertias.append(kmeans.inertia_)
-        
-        if plot_elbow:
-            plt.plot(k_range, inertias, marker='o')
-            plt.xlabel('Number of Clusters (k)')
-            plt.ylabel('Inertia')
-            plt.title('Elbow Method for Optimal k')
+            labels = kmeans.fit_predict(X)
+            score = silhouette_score(X, labels)
+            scores.append(score)
+            if score > best_score:
+                best_score = score
+                best_k = k
+
+        if plot_silhouette:
+            plt.plot(range(2, max_k + 1), scores, marker='o')
+            plt.xlabel("Number of Clusters (k)")
+            plt.ylabel("Silhouette Score")
+            plt.title("Silhouette Method for Optimal k")
             plt.grid(True)
-            plt.savefig("elbow_plot.png")
-        
-        drops = [inertias[i] - inertias[i+1] for i in range(len(inertias)-1)]
-        best_k = drops.index(max(drops)) + 1
-        print(f"[INFO] Using optimal k from elbow method: {best_k}")
+            plt.savefig("silhouette_plot.png")
+
+        print(f"[INFO] Using optimal k from silhouette method: {best_k}")
         num_clusters = best_k
-    
-    # Run KMeans with chosen or provided k
+
     kmeans = KMeans(n_clusters=num_clusters, random_state=42, n_init=10)
     labels = kmeans.fit_predict(X)
 
@@ -69,7 +73,7 @@ def classify_intents(clustered_data, responses):
         cluster_lookup.extend([cluster_id] * len(queries))
     
     # Vectorize all sentences
-    vectorizer = TfidfVectorizer(stop_words="english")
+    vectorizer = TfidfVectorizer(stop_words="english", ngram_range=(1,2), min_df=1)
     X = vectorizer.fit_transform(all_sentences)
     feature_names = vectorizer.get_feature_names_out() # This gives you a list of all words
 
@@ -112,7 +116,7 @@ def main():
     extracted_dialogues = extract_dialogues(text)
 
     pattern_to_responses = map_patterns_responses(extracted_dialogues)
-    clustered_data = cluster_intents(list(pattern_to_responses.keys()), num_clusters=None, plot_elbow=True)
+    clustered_data = cluster_intents(list(pattern_to_responses.keys()), num_clusters=None, plot_silhouette=True)
 
     classified_data = classify_intents(clustered_data, pattern_to_responses)
 
