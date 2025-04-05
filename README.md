@@ -3,6 +3,9 @@
 # Build docker image
 ./build_docker.sh
 
+# Extract Dialogues
+./run_dialogue_extraction.sh --input ./sample_stories/umbrella.txt --output dialogues.txt
+
 # Extract intents
 ./run_extract_intents.sh --input ./sample_stories/story.txt --output intents.json
 
