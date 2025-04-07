@@ -7,6 +7,8 @@ import coreferee
 from transformers import BertTokenizer
 from dialogue_extraction.dataset import DialogueAttributionDataset
 from sklearn.model_selection import train_test_split
+from dialogue_extraction.dialogue_speaker_classifier import DialogueSpeakerClassifier
+from dialogue_extraction.train import train_model
 
 def extract_dialogues_with_context_from_file(file_path, context_window = 1):
     with open(file_path, 'r', encoding='utf-8') as f:
@@ -130,7 +132,11 @@ def main():
     train_data, test_data = train_test_split(clean_data, test_size=0.3, stratify=[d['speaker'] for d in clean_data])
     train_dataset = DialogueAttributionDataset(train_data, tokenizer, label2id)
     test_dataset = DialogueAttributionDataset(test_data, tokenizer, label2id)
-    print(train_dataset.samples)
+
+    # Train model
+    model = DialogueSpeakerClassifier(num_classes=len(label2id))
+    trained_model = train_model(model, train_dataset, test_dataset)
+
 
  
 # Run script
