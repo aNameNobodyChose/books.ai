@@ -2,6 +2,7 @@ import spacy
 import re
 import argparse
 from collections import Counter
+from collections import defaultdict
 import coreferee
 
 def extract_dialogues_with_context_from_file(file_path, context_window = 1):
@@ -57,6 +58,54 @@ def resolve_coreferences(text):
                 coref_map.append((mention_span, main_mention))
     return coref_map
 
+def build_pronoun_resolution_map(coref_links):
+    """
+    Builds a map: pronoun -> set of resolved character names
+    """
+    pronoun_map = defaultdict(set)
+    for mention, resolved in coref_links:
+        mention = mention.lower().strip()
+        resolved = resolved.strip()
+        if mention in ['he', 'she', 'his', 'her']:
+            pronoun_map[mention].add(resolved)
+    return pronoun_map
+
+# TODO: got to make this robust enough so that it doesn't mislabel the speaker.
+def label_speakers(dialogues, character_names, coref_links):
+    name_set = set([name for name, _ in character_names])
+    pronoun_map = build_pronoun_resolution_map(coref_links)
+
+    speech_verbs = ['said', 'asked', 'replied', 'told', 'whispered', 'shouted', 'murmured', 'added', 'sighed']
+
+    for entry in dialogues:
+        context = entry['context']
+        context_lower = context.lower()
+        speaker = "UNKNOWN"
+
+        # Heuristic 1: Name + speech verb
+        for name in name_set:
+            for verb in speech_verbs:
+                if f'{name.lower()} {verb}' in context_lower or f'{verb} {name.lower()}' in context_lower:
+                    speaker = name
+                    break
+            if speaker != "UNKNOWN":
+                break
+
+        # Heuristic 2: Pronoun resolution (only if unambiguous)
+        if speaker == "UNKNOWN":
+            for pronoun in ['he', 'she', 'his', 'her']:
+                if pronoun in context_lower:
+                    resolved_names = pronoun_map.get(pronoun, set())
+                    if len(resolved_names) == 1:
+                        resolved_name = list(resolved_names)[0]
+                        if resolved_name in name_set:
+                            speaker = resolved_name
+                            break
+
+        entry['speaker'] = speaker
+
+    return dialogues
+
 def main():
     parser = argparse.ArgumentParser(description="Pass story")
     parser.add_argument("--input", required=True, help="Path to the input file")
@@ -66,9 +115,9 @@ def main():
         story_text = f.read()
     dialogue_data = extract_dialogues_with_context_from_file(args.input)
     character_names_by_frequency = extract_character_names(story_text)
-    print(character_names_by_frequency)
     coref_links = resolve_coreferences(story_text)
-    print(coref_links)
+    labeled_dialogues = label_speakers(dialogue_data, character_names_by_frequency, coref_links)
+    print(labeled_dialogues)
  
 # Run script
 if __name__ == "__main__":
