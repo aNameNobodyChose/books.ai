@@ -8,8 +8,12 @@ class DialogueSpeakerClassifier(nn.Module):
         self.dropout = nn.Dropout(0.3)
         self.classifier = nn.Linear(self.bert.config.hidden_size, num_classes)
 
-    def forward(self, input_ids, attention_mask):
-        output = self.bert(input_ids=input_ids, attention_mask=attention_mask)
+    def forward(self, input_ids, attention_mask, token_type_ids = None):
+        output = self.bert(
+            input_ids=input_ids,
+            attention_mask=attention_mask,
+            token_type_ids=token_type_ids
+        )
         cls_token = output.last_hidden_state[:, 0, :]  # [CLS] token
         x = self.dropout(cls_token)
         logits = self.classifier(x)
