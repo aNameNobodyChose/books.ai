@@ -1,6 +1,7 @@
 import spacy
 import re
 import argparse
+import torch
 from collections import Counter
 from collections import defaultdict
 import coreferee
@@ -111,6 +112,45 @@ def label_speakers(dialogues, character_names, coref_links):
 
     return dialogues
 
+def predict_ambiguous_quotes(model, labeled_dialogues, tokenizer, id2label, max_len=128):
+    model.eval()
+    device = next(model.parameters()).device
+
+    updated_dialogues = []
+
+    for item in labeled_dialogues:
+        if item['speaker'] != "UNKNOWN":
+            updated_dialogues.append(item)
+        else:
+            quote = item['quote']
+            context = item['context']
+            text = quote + tokenizer.sep_token + context
+            inputs = tokenizer(text,
+                               return_tensors="pt",
+                               padding="max_length",
+                               truncation=True,
+                               max_length=max_len)
+            inputs = {k: v.to(device) for k, v in inputs.items()}
+
+            with torch.no_grad():
+                logits = model(**inputs)
+                pred_id = torch.argmax(logits, dim=1).item()
+                predicted_speaker = id2label[pred_id]
+
+            updated_item = item.copy()
+            updated_item['speaker'] = predicted_speaker
+            updated_dialogues.append(updated_item)
+
+    return updated_dialogues
+
+def save_attributed_dialogues(dialogues, output_file="attributed_story.txt"):
+    with open(output_file, "w", encoding="utf-8") as f:
+        for entry in dialogues:
+            speaker = entry['speaker']
+            quote = entry['quote']
+            f.write(f"{speaker}: \"{quote}\"\n")
+    print(f"✅ Saved attributed story to {output_file}")
+
 def main():
     parser = argparse.ArgumentParser(description="Pass story")
     parser.add_argument("--input", required=True, help="Path to the input file")
@@ -137,8 +177,11 @@ def main():
     model = DialogueSpeakerClassifier(num_classes=len(label2id))
     trained_model = train_model(model, train_dataset, test_dataset)
 
-
- 
+    # Predict speakers for ambiguous quotes.
+    id2label = {v: k for k, v in label2id.items()}
+    predict_speakers_for_all_dialogues = predict_ambiguous_quotes(trained_model, labeled_dialogues, tokenizer, id2label)
+    save_attributed_dialogues(predict_speakers_for_all_dialogues, args.output)
+    
 # Run script
 if __name__ == "__main__":
     main()
