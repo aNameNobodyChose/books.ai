@@ -7,7 +7,8 @@ RUN pip install --no-cache-dir \
     scikit-learn==1.3.2 \
     matplotlib==3.8.2 \
     spacy==3.5.0 \
-    coreferee==1.4.1  # or latest working version with en_core_web_sm
+    coreferee==1.4.1 \
+    transformers==4.39.3  # or remove version pin to get latest
 
 # Download NLTK resources
 RUN python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords')"

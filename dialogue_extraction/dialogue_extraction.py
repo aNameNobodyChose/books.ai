@@ -4,6 +4,9 @@ import argparse
 from collections import Counter
 from collections import defaultdict
 import coreferee
+from transformers import BertTokenizer
+from dialogue_extraction.dataset import DialogueAttributionDataset
+from sklearn.model_selection import train_test_split
 
 def extract_dialogues_with_context_from_file(file_path, context_window = 1):
     with open(file_path, 'r', encoding='utf-8') as f:
@@ -117,7 +120,18 @@ def main():
     character_names_by_frequency = extract_character_names(story_text)
     coref_links = resolve_coreferences(story_text)
     labeled_dialogues = label_speakers(dialogue_data, character_names_by_frequency, coref_links)
-    print(labeled_dialogues)
+
+    # Clean up data. 
+    clean_data = [d for d in labeled_dialogues if d['speaker'] != "UNKNOWN"]
+    label2id = {name: idx for idx, name in enumerate(sorted(set(d['speaker'] for d in clean_data)))}
+    tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+
+    # Split data into training and testing data.
+    train_data, test_data = train_test_split(clean_data, test_size=0.3, stratify=[d['speaker'] for d in clean_data])
+    train_dataset = DialogueAttributionDataset(train_data, tokenizer, label2id)
+    test_dataset = DialogueAttributionDataset(test_data, tokenizer, label2id)
+    print(train_dataset.samples)
+
  
 # Run script
 if __name__ == "__main__":
