@@ -14,3 +14,6 @@
 
 # Run Chat Bot
 ./run_chatbot.sh --intents intents.json --model data.pth --bot-name barista
+
+# Run quote caster
+./run_quote_caster.sh --input ./sample_stories/umbrella.txt --output quotes_assigned.json
