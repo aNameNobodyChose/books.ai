@@ -17,3 +17,8 @@
 
 # Run quote caster
 ./run_quote_caster.sh --input ./sample_stories/umbrella.txt --output quotes_assigned.json
+
+# Run deepseek query
+./run_deep_seek.sh
+
+docker run --rm -it --network host  -v "$(pwd)":/workspace   -w /workspace  pytorch-chatbot   python -m quote_caster.deep_seek_query
