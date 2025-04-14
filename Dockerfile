@@ -8,7 +8,8 @@ RUN pip install --no-cache-dir \
     matplotlib==3.8.2 \
     spacy==3.5.0 \
     coreferee==1.4.1 \
-    transformers==4.39.3  # or remove version pin to get latest
+    transformers==4.39.3 \
+    openai==1.73.0  # <-- Added this line
 
 # Download NLTK resources
 RUN python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords')"
