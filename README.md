@@ -16,9 +16,13 @@
 ./run_chatbot.sh --intents intents.json --model data.pth --bot-name barista
 
 # Run quote caster
-./run_quote_caster.sh --input ./sample_stories/umbrella.txt --output quotes_assigned.json
+./run_quote_caster.sh --input ./sample_stories/umbrella.txt --output quotes.json
 
-# Run deepseek query
+# Run deepseek speaker attribution query locally
 ./run_deep_seek.sh
 
-docker run --rm -it --network host  -v "$(pwd)":/workspace   -w /workspace  pytorch-chatbot   python -m quote_caster.deep_seek_query
+./run_local_ai_query.sh --story ./sample_stories/umbrella.txt --quotes quotes.json
+
+# Run open ai speaker attribution query cloud
+
+./run_cloud_ai_query.sh --story ./sample_stories/umbrella.txt --quotes quotes.json

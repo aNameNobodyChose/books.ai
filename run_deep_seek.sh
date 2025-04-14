@@ -18,12 +18,12 @@ sleep 5
 
 # Step 4: Pull the DeepSeek Chat model inside the container
 echo "Pulling deepseek-chat model..."
-docker exec ollama ollama pull deepseek-r1
+docker exec ollama ollama pull deepseek-llm:7b
 
 # Step 5: (Optional) Run a test API call from host
 echo "Testing DeepSeek Chat API..."
 curl -s http://localhost:11434/api/generate -d '{
-  "model": "deepseek-r1",
+  "model": "deepseek-llm:7b",
   "prompt": "Hello, what can you do?",
   "stream": false
 }' | jq
