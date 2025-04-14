@@ -24,5 +24,7 @@
 ./run_local_ai_query.sh --story ./sample_stories/umbrella.txt --quotes quotes.json
 
 # Run open ai speaker attribution query cloud
-
 ./run_cloud_ai_query.sh --story ./sample_stories/umbrella.txt --quotes quotes.json
+
+# Upload quotes with speakers to hugging face
+ ./run_upload_to_hugging_face.sh --file_path quotes_with_speakers_umbrella.json
