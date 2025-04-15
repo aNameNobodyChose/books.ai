@@ -2,7 +2,7 @@
 
 # Set the image name and script to run
 IMAGE_NAME="pytorch-chatbot:latest"
-SCRIPT_NAME="quote_caster.quote_caster"
+SCRIPT_NAME="quote_caster.quotes_with_context"
 
 # Initialize variables
 INPUT_FILE=""

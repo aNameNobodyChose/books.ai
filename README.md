@@ -16,7 +16,7 @@
 ./run_chatbot.sh --intents intents.json --model data.pth --bot-name barista
 
 # Run quote caster
-./run_quote_caster.sh --input ./sample_stories/umbrella.txt --output quotes.json
+./run_quotes_with_context.sh --input ./sample_stories/umbrella.txt --output quotes.json
 
 # Run deepseek speaker attribution query locally
 ./run_deep_seek.sh
