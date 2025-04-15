@@ -28,3 +28,6 @@
 
 # Upload quotes with speakers to hugging face
  ./run_upload_to_hugging_face.sh --file_path quotes_with_speakers_umbrella.json
+
+# Download data from hugging face
+./run_download_datat_from_hugging_face.sh

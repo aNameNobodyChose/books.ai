@@ -9,7 +9,8 @@ RUN pip install --no-cache-dir \
     spacy==3.5.0 \
     coreferee==1.4.1 \
     transformers==4.39.3 \
-    openai==1.73.0  # <-- Added this line
+    openai==1.73.0 \
+    datasets==2.18.0  # <-- Added datasets
 
 # Download NLTK resources
 RUN python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords')"
