@@ -15,7 +15,7 @@
 # Run Chat Bot
 ./run_chatbot.sh --intents intents.json --model data.pth --bot-name barista
 
-# Run quote caster
+# Run quotes with context
 ./run_quotes_with_context.sh --input ./sample_stories/umbrella.txt --output quotes.json
 
 # Run deepseek speaker attribution query locally
@@ -31,3 +31,6 @@
 
 # Download data from hugging face
 ./run_download_datat_from_hugging_face.sh
+
+# Run quote caster
+./run_quote_caster.sh
