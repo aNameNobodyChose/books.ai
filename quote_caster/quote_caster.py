@@ -5,6 +5,7 @@ from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 import torch.nn.functional as F
 import torch
+import os
 from typing import List, Dict, Tuple
 from collections import defaultdict
 from quote_caster.download_data_from_hugging_face import download_multiple_splits
@@ -161,6 +162,12 @@ def train_encoder(dataset, model, tokenizer, epochs=3, lr=2e-5, batch_size=4):
 
         print(f"✅ Epoch {epoch + 1}/{epochs} | Total Loss: {total_loss:.4f}")
 
+def save_model_and_tokenizer(model, tokenizer, save_dir="models/quote_encoder_umbrella"):
+    os.makedirs(save_dir, exist_ok=True)
+    model.save_pretrained(save_dir)
+    tokenizer.save_pretrained(save_dir)
+    print(f"✅ Model and tokenizer saved to: {save_dir}")
+
 def main():
     HF_REPO_ID = "aNameNobodyChose/quote-speaker-attribution"
 
@@ -169,13 +176,15 @@ def main():
         "umbrella": "umbrella.json",
     }
 
+    tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
+    model = AutoModel.from_pretrained("bert-base-uncased")
     datasets_dict = download_multiple_splits(HF_REPO_ID, SPLIT_FILES)
     for split_name, data in datasets_dict.items():
         anonymized, name_to_id, id_to_name = anonymize_speakers(data)
         triplet_dataset = TripletQuoteDataset(anonymized)
-        tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
-        model = AutoModel.from_pretrained("bert-base-uncased")
         train_encoder(triplet_dataset, model, tokenizer, epochs=3)
+
+    save_model_and_tokenizer(model, tokenizer, save_dir="./models/quote_encoder_all_stories")
 
 # Run script
 if __name__ == "__main__":
