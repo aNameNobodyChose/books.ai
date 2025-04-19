@@ -10,7 +10,8 @@ RUN pip install --no-cache-dir \
     coreferee==1.4.1 \
     transformers==4.39.3 \
     openai==1.73.0 \
-    datasets==2.18.0  # <-- Added datasets
+    datasets==2.18.0 \
+    kneed==0.8.5
 
 # Download NLTK resources
 RUN python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords')"

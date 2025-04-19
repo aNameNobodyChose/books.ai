@@ -2,7 +2,7 @@
 
 # Set the image name and the script path
 IMAGE_NAME="pytorch-chatbot:latest"
-SCRIPT_NAME="quote_caster.quote_caster"
+SCRIPT_NAME="quote_caster.quote_caster_model_training"
 
 # Run the Docker container and execute the upload script
 docker run --rm -it \

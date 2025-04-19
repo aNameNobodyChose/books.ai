@@ -32,5 +32,8 @@
 # Download data from hugging face
 ./run_download_datat_from_hugging_face.sh
 
-# Run quote caster
-./run_quote_caster.sh
+# Run quote caster training
+./run_quote_caster_model_training.sh
+
+# Run quote caster inference
+./run_quote_caster_inference.sh
