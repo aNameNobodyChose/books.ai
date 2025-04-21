@@ -37,3 +37,6 @@
 
 # Run quote caster inference
 ./run_quote_caster_inference.sh
+
+# Upload model to hugging face
+./run_upload_to_hugging_face_model.sh --model_dir ./models/quote_encoder_all_stories

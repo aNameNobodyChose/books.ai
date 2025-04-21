@@ -2,7 +2,7 @@
 
 # Set the image name and the script path
 IMAGE_NAME="pytorch-chatbot:latest"
-SCRIPT_PATH="quote_caster/upload_to_hugging_face.py"
+SCRIPT_PATH="quote_caster.upload_to_hugging_face_dataset"
 
 # Initialize variable
 FILE_PATH=""
@@ -38,4 +38,4 @@ docker run --rm -it \
   -w /workspace \
   -e HUGGINGFACE_TOKEN="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" \
   $IMAGE_NAME \
-  python quote_caster/upload_to_hugging_face.py --file_path "$FILE_PATH"
+  python -m $SCRIPT_NAME --file_path "$FILE_PATH"
