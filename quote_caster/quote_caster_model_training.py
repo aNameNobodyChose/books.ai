@@ -182,7 +182,7 @@ def main():
     for split_name, data in datasets_dict.items():
         anonymized, name_to_id, id_to_name = anonymize_speakers(data)
         triplet_dataset = TripletQuoteDataset(anonymized)
-        train_encoder(triplet_dataset, model, tokenizer, epochs=3)
+        train_encoder(triplet_dataset, model, tokenizer, epochs=10)
 
     save_model_and_tokenizer(model, tokenizer, save_dir="./models/quote_encoder_all_stories")
 
