@@ -12,9 +12,9 @@ def load_unseen_story(json_path):
     print(f"✅ Loaded {len(data)} quotes from: {json_path}")
     return data
 
-def load_trained_encoder(model_path="./models/quote_encoder_all_stories"):
-    tokenizer = AutoTokenizer.from_pretrained(model_path)
-    model = AutoModel.from_pretrained(model_path)
+def load_trained_encoder():
+    tokenizer = AutoTokenizer.from_pretrained("aNameNobodyChose/quote-caster-encoder")
+    model = AutoModel.from_pretrained("aNameNobodyChose/quote-caster-encoder")
     model.eval()  # Set to inference mode
     return tokenizer, model
 
@@ -77,7 +77,7 @@ def main():
     optimal_k = auto_k_via_elbow(quote_embeddings)
     labels = KMeans(n_clusters=optimal_k).fit_predict(quote_embeddings.detach().numpy())
     for quote, cluster_id in zip(new_story_data, labels):
-        quote["predicted_speaker"] = f"CLUSTER_{cluster_id}"
+        quote["predicted_speaker"] = f"SPEAKER_{cluster_id}"
     with open("./predicted_quotes.json", "w", encoding="utf-8") as f:
         json.dump(new_story_data, f, indent=2, ensure_ascii=False)
     print("✅ Speaker prediction complete. Results saved to predicted_quotes.json")
