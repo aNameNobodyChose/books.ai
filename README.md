@@ -40,3 +40,19 @@
 
 # Upload model to hugging face
 ./run_upload_to_hugging_face_model.sh --model_dir ./models/quote_encoder_all_stories
+
+# Run Fast Api
+./run_fast_api.sh
+
+Example query: curl -X POST http://localhost:8000/predict \
+  -H "Content-Type: application/json" \
+  -d '[
+        {
+          "quote": "Forgot your umbrella too?",
+          "context": "Mia turned to see a guy holding a dripping bag."
+        },
+        {
+          "quote": "Yeah.",
+          "context": "He smiled and shook his head."
+        }
+      ]'
