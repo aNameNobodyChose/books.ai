@@ -69,15 +69,20 @@ def auto_k_via_elbow(embeddings, max_k=10, output_file="elbow_auto.png"):
     print(f"✅ Optimal k selected: {optimal_k} (saved plot to {output_file})")
     return optimal_k
 
-def main():
+def predict_speakers(story_data):
     tokenizer, model = load_trained_encoder()
-    new_story_data = load_unseen_story("./quotes.json")
-    quote_embeddings = run_embedding_pipeline(new_story_data, tokenizer, model)
-    print("✅ Embeddings shape:", quote_embeddings.shape)
+    quote_embeddings = run_embedding_pipeline(story_data, tokenizer, model)
     optimal_k = auto_k_via_elbow(quote_embeddings)
     labels = KMeans(n_clusters=optimal_k).fit_predict(quote_embeddings.detach().numpy())
-    for quote, cluster_id in zip(new_story_data, labels):
+
+    for quote, cluster_id in zip(story_data, labels):
         quote["predicted_speaker"] = f"SPEAKER_{cluster_id}"
+    return story_data
+
+
+def main():
+    new_story_data = load_unseen_story("./quotes.json")
+    new_story_data = predict_speakers(new_story_data)
     with open("./predicted_quotes.json", "w", encoding="utf-8") as f:
         json.dump(new_story_data, f, indent=2, ensure_ascii=False)
     print("✅ Speaker prediction complete. Results saved to predicted_quotes.json")

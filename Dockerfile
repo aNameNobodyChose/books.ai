@@ -3,6 +3,8 @@ FROM pytorch/pytorch:2.2.0-cuda11.8-cudnn8-runtime
 # Install Python packages with specific versions
 RUN pip install --no-cache-dir \
     "numpy<2.0" \
+    fastapi==0.110.0 \
+    uvicorn==0.27.1 \
     nltk==3.8.1 \
     scikit-learn==1.3.2 \
     matplotlib==3.8.2 \
